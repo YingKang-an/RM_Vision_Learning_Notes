@@ -57,18 +57,18 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yinkangan/桌面/task3
+CMAKE_SOURCE_DIR = /home/yinkangan/Desktop/Vision/task3
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/yinkangan/桌面/task3/build
+CMAKE_BINARY_DIR = /home/yinkangan/Desktop/Vision/task3/build
 
 #=============================================================================
 # Targets provided globally by CMake.
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Running CMake cache editor..."
+	/usr/bin/cmake-gui -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yinkangan/桌面/task3/build/CMakeFiles /home/yinkangan/桌面/task3/build//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yinkangan/Desktop/Vision/task3/build/CMakeFiles /home/yinkangan/Desktop/Vision/task3/build//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/yinkangan/桌面/task3/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/yinkangan/Desktop/Vision/task3/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -129,43 +129,6 @@ main/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
 .PHONY : main/fast
 
-#=============================================================================
-# Target rules for targets named 1
-
-# Build rule for target.
-1 : cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 1
-.PHONY : 1
-
-# fast build rule for target.
-1/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/1.dir/build.make CMakeFiles/1.dir/build
-.PHONY : 1/fast
-
-1.o: 1.cpp.o
-.PHONY : 1.o
-
-# target to build an object file
-1.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/1.dir/build.make CMakeFiles/1.dir/1.cpp.o
-.PHONY : 1.cpp.o
-
-1.i: 1.cpp.i
-.PHONY : 1.i
-
-# target to preprocess a source file
-1.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/1.dir/build.make CMakeFiles/1.dir/1.cpp.i
-.PHONY : 1.cpp.i
-
-1.s: 1.cpp.s
-.PHONY : 1.s
-
-# target to generate assembly for a file
-1.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/1.dir/build.make CMakeFiles/1.dir/1.cpp.s
-.PHONY : 1.cpp.s
-
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -198,11 +161,7 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... 1"
 	@echo "... main"
-	@echo "... 1.o"
-	@echo "... 1.i"
-	@echo "... 1.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
