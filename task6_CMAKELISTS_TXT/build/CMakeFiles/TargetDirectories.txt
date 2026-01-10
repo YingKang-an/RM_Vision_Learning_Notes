@@ -1,3 +1,0 @@
-/home/yinkangan/Desktop/Vision/task6_CMAKELISTS_TXT/build/CMakeFiles/main.dir
-/home/yinkangan/Desktop/Vision/task6_CMAKELISTS_TXT/build/CMakeFiles/edit_cache.dir
-/home/yinkangan/Desktop/Vision/task6_CMAKELISTS_TXT/build/CMakeFiles/rebuild_cache.dir
