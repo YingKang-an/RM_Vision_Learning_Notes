@@ -64,4 +64,21 @@ $$
 \sqrt 2,\sqrt{x+y},\sqrt[3]{x+y}
 $$
 
-## 
+## 普通运算符
+
+$$
+\times,\cdot,\div,+ ,- \\
+\pm,\mp\\
+\ge,\le,><,\gg,\ll,\ne,\approx,\equiv \\
+\cap,\cup,\in,\notin,\subseteq,\subsetneq,\subsetneqq,\varnothing\\
+\forall,\exists,\nexists\\
+\because,\therefore\\
+\R,\mathbb Q,\N,\Z,\Z_+\\
+\mathcal F,\mathscr F\\
+\cdots,\vdots,\ddots\\
+\infty,\partial,\nabla,\propto,\degree\\
+\sin x,\sec x,\cosh x\\
+\log_2 x,\ln x,\lg x\\
+\lim_{x \to 0} \frac{x}{sin x}\\
+\max \limits x,\min x\\
+$$
