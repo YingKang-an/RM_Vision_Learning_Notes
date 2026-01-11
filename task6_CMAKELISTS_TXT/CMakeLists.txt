@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.18)
 #    - 最佳实践：项目名只在这一处定义，后续修改只需改这里
 project(main LANGUAGES CXX)
 
-# 3. 配置C++语言标准（RoboMaster/工业视觉项目推荐C++20）
+# 3. 配置C++语言标准（RoboMaster项目推荐C++20）
 #    - CMAKE_CXX_STANDARD：指定使用C++20标准（支持concept、coroutine等新特性）
 #    - CMAKE_CXX_STANDARD_REQUIRED ON：强制要求编译器支持C++20，不支持则报错（避免降级到低版本）
 #    - CMAKE_CXX_EXTENSIONS OFF：禁用编译器非标准扩展（如GNU的__int128），保证跨平台兼容性
@@ -83,7 +83,7 @@ set(DAHENG_LIBS gxiapi)
 find_package(OpenCV REQUIRED)
 # 二次校验（增强鲁棒性，部分环境find_package返回true但实际未找到）
 if(NOT OpenCV_FOUND)
-    message(FATAL_ERROR "未找到OpenCV库！请配置OpenCV环境变量（如export OpenCV_DIR=/usr/local/lib/cmake/opencv4）")
+    message(FATAL_ERROR "未找到OpenCV库！请配置OpenCV环境变量")
 endif()
 
 # -------------------- 方式3：手动查找 yaml-cpp（指定静态库完整路径） --------------------
@@ -115,7 +115,7 @@ endif()
 #     - 源文件列表：1_main.cpp（主函数）、calculate.cpp（计算逻辑），可继续添加detect.cpp等
 #     - 注意：头文件无需添加，编译器通过#include自动查找
 add_executable(${PROJECT_NAME}
-    1_main.cpp      
+    1_main.cpp
     calculate.cpp
     # 扩展示例：detect.cpp track.cpp camera.cpp
 )

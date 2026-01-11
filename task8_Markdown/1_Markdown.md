@@ -55,9 +55,9 @@
         [^1]:脚注在这注解一下
 6. **代码**
     - 单句代码
-    ` print"hello!"; `
+    ` print"hello!";`
     - 代码块
-    ```
+    ```cpp
     class Test         //class 关键字， Test 类名，一般首字母大写
     {
     private:           //私有访问权限

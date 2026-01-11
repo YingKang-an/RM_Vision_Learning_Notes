@@ -41,7 +41,7 @@
   (若其内只有一个字符则可省略大括号)
 
 $$
-a^2,a_1\\
+a^2,a_1 \\
 x^{y+z},P_{ij},
 $$
 
@@ -69,7 +69,7 @@ $$
 $$
 \times,\cdot,\div,+ ,- \\
 \pm,\mp\\
-\ge,\le,><,\gg,\ll,\ne,\approx,\equiv \\
+\lt,\gt,\ge,\le,><,\gg,\ll,\ne,\approx,\equiv\\
 \cap,\cup,\in,\notin,\subseteq,\subsetneq,\subsetneqq,\varnothing\\
 \forall,\exists,\nexists\\
 \because,\therefore\\
