@@ -9,8 +9,6 @@
 - 感知机模型(生物机制)
 <center><img src="pictures/神经元.jpg" style="width: 70%;"alt="神经元.jpg"></center>
 
-- 模型:
-
 ```mermaid
 flowchart LR
     X0[x₀=I] --> W0(w₀)
@@ -57,14 +55,15 @@ $$\omega \cdot x + b = 0$$
 对应超平面 $S$ , $\omega$ 为法向量, $b$ 为截距,分离正负类
 ### 感知机学习策略
 如何定义损失函数
-自然选择:误分类点的数目?但是损失函数不是 $w$ , $b$ 的函数,不连续,不可导,不宜优化.不行.
+自然选择:误分类点的数目?但是损失函数不是 $w$ , $b$ 的函数(它不会随着 $w$ , $b$ 的变化而变化,会突变),不连续,不可导,不宜优化.不行.
 定量描述**误分类点**到超平面的总距离:
 $$\frac{1}{\|\omega\|}|\omega \cdot x_0 + b|$$
 **误分类**的点:
 $$-y_i (w \cdot x_i + b) > 0$$
 误分类的点的总距离:
 $$- \frac{1}{\| w \|} \sum_{x_i \in M} y_i (\omega \cdot x_i + b)$$
-感知机的损失函数:
+
+$\therefore$   感知机的损失函数:
 $$L(w, b) = - \sum_{x_i \in M} y_i (w \cdot x_i + b)$$
 为什么不考虑 $\frac{1}{\|\omega\|}$ 呢?
 - [x] 分类的时候只需要考虑分类是否正确,而不在乎离超平面的距离
@@ -97,6 +96,7 @@ $$L(w, b) = - \sum_{x_i \in M} y_i (w \cdot x_i + b)$$
             - 长度代表变化速率
             - 方向代表增长方向
 - 随机梯度下降法 求解感知机:
+
 首先选择任意一个超平面, $\omega$ , $b$ ,然后不断极小化目标函数,损失函数 $L$ 的梯度:
 $$\nabla_w L(w, b) = \frac{\partial}{\partial w} L(w, b) = - \sum_{x_i \in M} y_i x_i$$
 $$\nabla_b L(w, b) = \frac{\partial}{\partial b} L(w, b) = - \sum_{x_i \in M} y_i$$

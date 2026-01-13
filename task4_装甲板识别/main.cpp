@@ -174,7 +174,7 @@ vector<LightBar> filterLightBars(const Mat& src)
 
         // 4.2.1计算轮廓的最小外接旋转矩形
         RotatedRect rect = minAreaRect(contours[i]);
-        // 4.2.2获取旋转矩形的宽度和高度（w、h是矩形的两个边长，无固定长宽之分）
+        // 4.2.2获取旋转矩形的宽度和高度(w、h是矩形的两个边长，无固定长宽之分）
         float w = rect.size.width;
         float h = rect.size.height;
         if (w < 1 || h < 1) continue; // 避免长宽为0导致除0问题
@@ -195,7 +195,7 @@ vector<LightBar> filterLightBars(const Mat& src)
 
         // 5.计算灯条旋转矩形面积 用于创建大矩形
         float rect_area = w * h;
-        // 5.1创建大矩形（面积n倍）
+        // 5.1创建大矩形(面积n倍）
         Rect big_rect = createBigRect(rect.center, rect_area, src);
         // 5.2提取ROI
         Mat big_rect_roi = src(big_rect);
@@ -381,7 +381,7 @@ Mat detectArmor(const Mat& src)
     // 1.图像预处理
     preprocessImage(src);
 
-    // 2. 筛选灯条（含大矩形创建+HSV颜色识别）
+    // 2. 筛选灯条(含大矩形创建+HSV颜色识别）
     vector<LightBar> light_bars = filterLightBars(src);
 
     // 3. 绘制检测结果
