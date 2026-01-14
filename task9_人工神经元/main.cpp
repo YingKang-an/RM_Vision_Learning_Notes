@@ -1,11 +1,10 @@
 #include <iostream>
-#include <string>
-#include <vector>
 #include <yaml-cpp/yaml.h>
 #include <opencv2/core/core.hpp>
 
-// 平面方程:    1x - 2y + 3z - 4 = 0
-// 目标平面参数: A=1,B=-2,C=3,D=-4
+// 初始化平面方程: 12x -34y -5z -9 = 0
+// 平面方程:      1x - 2y + 3z - 4 = 0
+// 目标平面参数:   A=1,B=-2,C=3,D=-4
 
 int sign(float val) {
   return val >= 0 ? 1 : -1;
@@ -53,7 +52,7 @@ bool LoadDatasetFromYAML(const std::string& yaml_path, cv::Mat_<float>& X, cv::M
 
     y(row_idx, 0) = -1;
   }
-    
+
   std::cout << "\n[Info] 数据集加载完成：" << std::endl;
   std::cout << "  总点数：" << total_num << "（正类：" << pos_pts.size() << "，负类：" << neg_pts.size() << "）" << std::endl;
   std::cout << "  目标平面方程: x - 2y + 3z - 4 = 0" << std::endl;
@@ -68,7 +67,7 @@ bool LoadDatasetFromYAML(const std::string& yaml_path, cv::Mat_<float>& X, cv::M
 // 训练感知机
 cv::Mat_<float> trainPerceptron(const cv::Mat_<float>& X, const cv::Mat_<int>& y, float eta = 0.1f, int max_iter = 1000) {
   // 初始化参数向量 theta：[A, B, C, D]^T
-  cv::Mat_<float> theta = (cv::Mat_<float>(4, 1) << 0.0f, 0.0f, 0.0f, 0.0f);
+  cv::Mat_<float> theta = (cv::Mat_<float>(4, 1) << 12.0f, -34.0f, -5.0f, -9.0f);   // 初始参数
 
   // 迭代
   int iter = 0;
@@ -77,7 +76,7 @@ cv::Mat_<float> trainPerceptron(const cv::Mat_<float>& X, const cv::Mat_<int>& y
   std::cout << "=======================================================" << std::endl;
   std::cout << "目标平面: x - 2y + 3z - 4 = 0" << std::endl;
   std::cout << "学习率: " << eta << "，最大迭代次数: " << max_iter << std::endl;
-  std::cout << "初始参数: A=0, B=0, C=0, D=0" << std::endl;
+  std::cout << "初始参数: A=" << theta(0,0) << ", B=" << theta(1,0) << ", C=" << theta(2,0) << ", D=" << theta(3,0) << std::endl;
   std::cout << "=======================================================" << std::endl;
   
   while (iter < max_iter) {
@@ -92,29 +91,26 @@ cv::Mat_<float> trainPerceptron(const cv::Mat_<float>& X, const cv::Mat_<int>& y
       // Score
       float S = X(i,0)*theta(0,0)+X(i,1)*theta(1,0)+X(i,2)*theta(2,0)+X(i,3)*theta(3,0);
       
-      int true_label = y(i, 0);  // y
-      int pred_label = sign(S);  // y_hat
+      int _y = y(i, 0);       // y
+      int _y_hat_ = sign(S);  // y_hat
         
-      if (pred_label != true_label) {
+      if (_y_hat_ != _y) {
         misclassified++;
         
         // 保存旧参数用于显示
-        float A_old = theta(0,0);
-        float B_old = theta(1,0);
-        float C_old = theta(2,0);
-        float D_old = theta(3,0);
-        
-        // 更新参数: theta = theta + eta * true_label * x
-        theta(0,0) += eta * true_label * X(i, 0);
-        theta(1,0) += eta * true_label * X(i, 1);
-        theta(2,0) += eta * true_label * X(i, 2);
-        theta(3,0) += eta * true_label * X(i, 3);  // X(i,3) = 1
+        cv::Mat_<float> theta_old = theta.clone();
+
+        // 更新参数: theta = theta + eta * _y * x 
+        // omega = omega + eta * _y * x , b = b + eta * _y * 1.0
+        //                       ~~~~^~~     这是梯度    ~~^~
+        cv::Mat_<float> x_vector = X.row(i).t();  // 将行向量转置为列向量
+        theta = theta + eta * _y * x_vector;
         
         std::cout << "[第" << iter+1 << "轮] 点" << i+1 << "误分类|更新:\n"
-              << "A(" << A_old << "→" << theta(0,0) << ")\n"
-              << "B(" << B_old << "→" << theta(1,0) << ")\n"
-              << "C(" << C_old << "→" << theta(2,0) << ")\n"
-              << "D(" << D_old << "→" << theta(3,0) << ")\n" << std::endl;
+              << "A(" << theta_old(0, 0) << "→" << theta(0,0) << ")\n"
+              << "B(" << theta_old(1, 0) << "→" << theta(1,0) << ")\n"
+              << "C(" << theta_old(2, 0) << "→" << theta(2,0) << ")\n"
+              << "D(" << theta_old(3, 0) << "→" << theta(3,0) << ")\n" << std::endl;
       }
     }
     
@@ -142,33 +138,35 @@ cv::Mat_<float> trainPerceptron(const cv::Mat_<float>& X, const cv::Mat_<int>& y
 // 验证感知机
 bool validatePerceptron(const cv::Mat_<float>& X, const cv::Mat_<int>& y, 
                        const cv::Mat_<float>& theta) {
-    int total_points = X.rows;
-    int misclassified = 0;
+  int total_points = X.rows;
+  int misclassified = 0;
+  
+  std::cout << "\n[validate] 开始验证，总点数: " << total_points << std::endl;
+  std::cout << "学习到的平面方程: " << theta(0,0) << "x + " << theta(1,0) << "y + "
+            << theta(2,0) << "z + " << theta(3,0) << " = 0" << std::endl;
+  std::cout << "=======================================================" << std::endl;  
+  
+  for (int i = 0; i < total_points; ++i) {
+    float S = X(i,0)*theta(0,0) + X(i,1)*theta(1,0) + X(i,2)*theta(2,0) + X(i,3)*theta(3,0);
+      
+    int _y_hat_ = sign(S);
+    int _y = y(i, 0);
     
-    std::cout << "\n[validate] 开始验证，总点数: " << total_points << std::endl;
-    std::cout << "学习到的平面方程: " << theta(0,0) << "x + " << theta(1,0) << "y + "
-         << theta(2,0) << "z + " << theta(3,0) << " = 0" << std::endl;
-    std::cout << "=======================================================" << std::endl;  
-    
-    for (int i = 0; i < total_points; ++i) {
-        float S = X(i,0)*theta(0,0) + X(i,1)*theta(1,0) + 
-                 X(i,2)*theta(2,0) + X(i,3)*theta(3,0);
-        
-        int pred_label = sign(S);
-        int true_label = y(i, 0);
-        
-        if (pred_label != true_label) {
-            misclassified++;
-             std::cout << "[误] 点" << i+1 << "(" << X(i,0) << "," << X(i,1) << "," << X(i,2) 
-                 << ") 预测:" << pred_label << " 实际:" << true_label << std::endl;
-        }
+    if (_y_hat_ != _y) {
+      misclassified++;
+      std::cout << "[错误] 点" << i+1 << "(" << X(i,0) << "," << X(i,1) << "," << X(i,2) 
+                << ") 预测:" << _y_hat_ << " 实际:" << _y << std::endl;
+    } else {
+      std::cout << "[正确] 点" << i+1 << "(" << X(i,0) << "," << X(i,1) << "," << X(i,2) 
+                << ") 预测:" << _y_hat_ << " 实际:" << _y << std::endl;
     }
-    
-    std::cout << "=======================================================" << std::endl;
-    std::cout << "[validate] 完成！正确分类: " << (total_points - misclassified)
-         << " | 误分类: " << misclassified << std::endl;
-    
-    return (misclassified == 0);
+  }
+  
+  std::cout << "=======================================================" << std::endl;
+  std::cout << "[validate] 完成！正确分类: " << (total_points - misclassified)
+        << " | 误分类: " << misclassified << std::endl;
+  
+  return (misclassified == 0);
 }
 
 int main() {
@@ -177,14 +175,14 @@ int main() {
   cv::Mat_<int> y;   // 标签
 
   if (!LoadDatasetFromYAML("../dots.yaml", X, y)) {
-      std::cerr << "程序退出：数据集加载失败" << std::endl;
-      return -1;
+    std::cerr << "程序退出：数据集加载失败" << std::endl;
+    return -1;
   }
     
   // 训练感知机
   std::cout << "\n开始训练感知机..." << std::endl;
   
-  // 使用较大的学习率和迭代次数，确保收敛
+  //   ------------------------------------    学习率 迭代次数
   cv::Mat_<float> theta = trainPerceptron(X, y, 0.3f, 10000);
   
   // 验证结果
@@ -192,13 +190,10 @@ int main() {
   
   if (success) {
     std::cout << "\n========== 训练成功！ ==========" << std::endl;
-    std::cout << "目标平面方程: x - 2y + 3z - 4 = 0" << std::endl;
-    std::cout << "学习到的平面: " << theta(0,0) << "x + " << theta(1,0) << "y + "
-              << theta(2,0) << "z + " << theta(3,0) << " = 0" << std::endl;
-    // 归一化比较（将A系数归一化为1）
+    // 归一化比较（将平面方程A系数归一化为1）
     if (fabs(theta(0,0)) > 1e-6) {
       float scale = theta(0,0);
-      std::cout << "\nA系数归一化为:" << std::endl;
+      std::cout << "\n目标平面方程A系数归一化为:" << std::endl;
       std::cout << "学习到的平面: x + " << theta(1,0)/scale << "y + "
                 << theta(2,0)/scale << "z + " << theta(3,0)/scale << " = 0" << std::endl;
       std::cout << "目标平面:   x - 2y + 3z - 4 = 0" << std::endl;
