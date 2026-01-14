@@ -32,8 +32,8 @@ bool LoadDatasetFromYAML(const std::string& yaml_path, cv::Mat_<float>& X, cv::M
   }
 
   // 初始化数据集矩阵
-  X = cv::Mat_<float>(total_num, 4);  // 4*4的特征矩阵
-  y = cv::Mat_<int>(total_num, 1);    // 1*4的标签矩阵
+  X = cv::Mat_<float>(total_num, 4);  // n*4的特征矩阵
+  y = cv::Mat_<int>(total_num, 1);    // n*1的标签矩阵
 
   int row_idx = 0;
     
@@ -92,11 +92,11 @@ cv::Mat_<float> trainPerceptronMiniBatch(const cv::Mat_<float>& X, const cv::Mat
   std::cout << "=======================================================" << std::endl;
   
   while (iter < max_iter) {
-    // 使用现代随机数生成器打乱数据顺序（小批量梯度下降的关键）
+    // 使用随机数生成器打乱数据顺序（小批量梯度下降的关键）
     std::shuffle(indices.begin(), indices.end(), g);
     
     int total_misclassified = 0;
-    int batch_count = 0;
+    int batch_count = 0;         // 每一批次里的样本数
     
     // 按批次处理数据
     for (int batch_start = 0; batch_start < total_points; batch_start += batch_size) {
@@ -210,7 +210,7 @@ int main() {
   
   // 使用小批量梯度下降版本
   // 参数：学习率=0.3，批量大小=4，最大迭代次数=10000
-  cv::Mat_<float> theta = trainPerceptronMiniBatch(X, y, 0.3f, 4, 10000);
+  cv::Mat_<float> theta = trainPerceptronMiniBatch(X, y, 0.1f, 5, 10000);
   
   // 验证结果
   bool success = validatePerceptron(X, y, theta);

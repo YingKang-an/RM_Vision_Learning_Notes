@@ -30,8 +30,8 @@ bool LoadDatasetFromYAML(const std::string& yaml_path, cv::Mat_<float>& X, cv::M
   }
 
   // 初始化数据集矩阵
-  X = cv::Mat_<float>(total_num, 4);  // 4*4的特征矩阵
-  y = cv::Mat_<int>(total_num, 1);    // 1*4的标签矩阵
+  X = cv::Mat_<float>(total_num, 4);  // n*4的特征矩阵
+  y = cv::Mat_<int>(total_num, 1);    // n*1的标签矩阵
 
   int row_idx = 0;
     
@@ -181,7 +181,7 @@ int main() {
   std::cout << "\n开始训练感知机（批量梯度下降）..." << std::endl;
   
   // 使用批量梯度下降版本
-  cv::Mat_<float> theta = trainPerceptronBatch(X, y, 0.3f, 10000);
+  cv::Mat_<float> theta = trainPerceptronBatch(X, y, 0.1f, 10000);
   
   // 验证结果
   bool success = validatePerceptron(X, y, theta);

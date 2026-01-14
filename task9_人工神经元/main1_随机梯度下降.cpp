@@ -32,8 +32,8 @@ bool LoadDatasetFromYAML(const std::string& yaml_path, cv::Mat_<float>& X, cv::M
   }
 
   // 初始化数据集矩阵
-  X = cv::Mat_<float>(total_num, 4);  // 4*4的特征矩阵
-  y = cv::Mat_<int>(total_num, 1);    // 1*4的标签矩阵
+  X = cv::Mat_<float>(total_num, 4);  // n*4的特征矩阵
+  y = cv::Mat_<int>(total_num, 1);    // n*1的标签矩阵
 
   int row_idx = 0;
     
@@ -63,7 +63,7 @@ bool LoadDatasetFromYAML(const std::string& yaml_path, cv::Mat_<float>& X, cv::M
 }
 
 // 行向量 * 列向量 = 对应元素乘积的`和`
-//[x_n,y_n,z_n,1.0] * [A,B,C,D] = [x_n*A + y_n*B + z_n*C + D*1.0]
+// [x_n,y_n,z_n,1.0] * [A,B,C,D]^T = [x_n*A + y_n*B + z_n*C + D*1.0]
 
 // 训练感知机（随机梯度下降版本 - 带随机打乱）
 cv::Mat_<float> trainPerceptron(const cv::Mat_<float>& X, const cv::Mat_<int>& y, float eta = 0.1f, int max_iter = 1000) {
@@ -104,7 +104,7 @@ cv::Mat_<float> trainPerceptron(const cv::Mat_<float>& X, const cv::Mat_<int>& y
       // 行向量 * 列向量 = 对应元素乘积的`和`
       //[x_n,y_n,z_n,1.0] * [A,B,C,D] = [x_n*A + y_n*B + z_n*C + D*1.0]
 
-      // Score
+      // 每个的Score
       float S = X(i,0)*theta(0,0)+X(i,1)*theta(1,0)+X(i,2)*theta(2,0)+X(i,3)*theta(3,0);
       
       int _y = y(i, 0);       // y
@@ -118,7 +118,7 @@ cv::Mat_<float> trainPerceptron(const cv::Mat_<float>& X, const cv::Mat_<int>& y
         cv::Mat_<float> theta_old = theta.clone();
 
         // 更新参数: theta = theta + eta * _y * x 
-        // omega = omega + eta * _y * x , b = b + eta * _y * 1.0
+        // omega = omega + eta * _y * x , b = b + eta * _y * 1.0 (theta = A,B,C. omega =D) 
         //                       ~~~~^~~     这是梯度    ~~^~
         cv::Mat_<float> x_vector = X.row(i).t();  // 将行向量转置为列向量
         theta = theta + eta * _y * x_vector;
@@ -200,7 +200,7 @@ int main() {
   std::cout << "\n开始训练感知机（随机梯度下降 - 带随机打乱）..." << std::endl;
   
   //   ------------------------------------    学习率 迭代次数
-  cv::Mat_<float> theta = trainPerceptron(X, y, 0.3f, 10000);
+  cv::Mat_<float> theta = trainPerceptron(X, y, 0.1f, 10000);
   
   // 验证结果
   bool success = validatePerceptron(X, y, theta);
