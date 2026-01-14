@@ -1,6 +1,8 @@
 #include <iostream>
 #include <yaml-cpp/yaml.h>
 #include <opencv2/core/core.hpp>
+#include <random>
+#include <algorithm>
 
 // 初始化平面方程: 12x -34y -5z -9 = 0
 // 平面方程:      1x - 2y + 3z - 4 = 0
@@ -63,9 +65,9 @@ bool LoadDatasetFromYAML(const std::string& yaml_path, cv::Mat_<float>& X, cv::M
 // 行向量 * 列向量 = 对应元素乘积的`和`
 //[x_n,y_n,z_n,1.0] * [A,B,C,D] = [x_n*A + y_n*B + z_n*C + D*1.0]
 
-
-// 训练感知机
-cv::Mat_<float> trainPerceptron(const cv::Mat_<float>& X, const cv::Mat_<int>& y, float eta = 0.1f, int max_iter = 1000) {
+// 训练感知机（小批量梯度下降版本）
+cv::Mat_<float> trainPerceptronMiniBatch(const cv::Mat_<float>& X, const cv::Mat_<int>& y, 
+                                        float eta = 0.1f, int batch_size = 4, int max_iter = 1000) {
   // 初始化参数向量 theta：[A, B, C, D]^T
   cv::Mat_<float> theta = (cv::Mat_<float>(4, 1) << 12.0f, -34.0f, -5.0f, -9.0f);   // 初始参数
 
@@ -73,53 +75,77 @@ cv::Mat_<float> trainPerceptron(const cv::Mat_<float>& X, const cv::Mat_<int>& y
   int iter = 0;
   int total_points = X.rows;
   
+  // 创建索引数组用于随机打乱
+  std::vector<int> indices(total_points);
+  for (int i = 0; i < total_points; i++) {
+    indices[i] = i;
+  }
+  
+  // 创建随机数生成器
+  std::random_device rd;
+  std::mt19937 g(rd());
+  
   std::cout << "=======================================================" << std::endl;
   std::cout << "目标平面: x - 2y + 3z - 4 = 0" << std::endl;
-  std::cout << "学习率: " << eta << "，最大迭代次数: " << max_iter << std::endl;
+  std::cout << "学习率: " << eta << "，批量大小: " << batch_size << "，最大迭代次数: " << max_iter << std::endl;
   std::cout << "初始参数: A=" << theta(0,0) << ", B=" << theta(1,0) << ", C=" << theta(2,0) << ", D=" << theta(3,0) << std::endl;
   std::cout << "=======================================================" << std::endl;
   
   while (iter < max_iter) {
-    // 计算当前轮次的误分类数
-    int misclassified = 0;
+    // 使用现代随机数生成器打乱数据顺序（小批量梯度下降的关键）
+    std::shuffle(indices.begin(), indices.end(), g);
     
-    for (int i = 0; i < total_points; i++) {
-
-      // 行向量 * 列向量 = 对应元素乘积的`和`
-      //[x_n,y_n,z_n,1.0] * [A,B,C,D] = [x_n*A + y_n*B + z_n*C + D*1.0]
-
-      // Score
-      float S = X(i,0)*theta(0,0)+X(i,1)*theta(1,0)+X(i,2)*theta(2,0)+X(i,3)*theta(3,0);
+    int total_misclassified = 0;
+    int batch_count = 0;
+    
+    // 按批次处理数据
+    for (int batch_start = 0; batch_start < total_points; batch_start += batch_size) {
+      batch_count++;
       
-      int _y = y(i, 0);       // y
-      int _y_hat_ = sign(S);  // y_hat
+      // 小批量梯度下降：收集当前批次的梯度
+      cv::Mat_<float> batch_gradient = cv::Mat_<float>::zeros(4, 1);  // 批次梯度累加器
+      int batch_misclassified = 0;
+      
+      // 处理当前批次
+      for (int j = batch_start; j < std::min(batch_start + batch_size, total_points); j++) {
+        int i = indices[j];  // 使用打乱后的索引
         
-      if (_y_hat_ != _y) {
-        misclassified++;
+        // Score
+        float S = X(i,0)*theta(0,0) + X(i,1)*theta(1,0) + X(i,2)*theta(2,0) + X(i,3)*theta(3,0);
         
-        // 保存旧参数用于显示
-        cv::Mat_<float> theta_old = theta.clone();
-
-        // 更新参数: theta = theta + eta * _y * x 
-        // omega = omega + eta * _y * x , b = b + eta * _y * 1.0
-        //                       ~~~~^~~     这是梯度    ~~^~
-        cv::Mat_<float> x_vector = X.row(i).t();  // 将行向量转置为列向量
-        theta = theta + eta * _y * x_vector;
+        int _y = y(i, 0);       // y
+        int _y_hat_ = sign(S);  // y_hat
         
-        std::cout << "[第" << iter+1 << "轮] 点" << i+1 << "误分类|更新:\n"
-              << "A(" << theta_old(0, 0) << "→" << theta(0,0) << ")\n"
-              << "B(" << theta_old(1, 0) << "→" << theta(1,0) << ")\n"
-              << "C(" << theta_old(2, 0) << "→" << theta(2,0) << ")\n"
-              << "D(" << theta_old(3, 0) << "→" << theta(3,0) << ")\n" << std::endl;
+        if (_y_hat_ != _y) {
+          batch_misclassified++;
+          total_misclassified++;
+          // 小批量梯度下降：累加当前批次中误分类点的梯度
+          cv::Mat_<float> x_vector = X.row(i).t();  // 将行向量转置为列向量
+          batch_gradient += _y * x_vector;
+        }
+      }
+      
+      // 保存旧参数用于显示
+      cv::Mat_<float> theta_old = theta.clone();
+      
+      // 小批量梯度下降：使用当前批次更新参数
+      if (batch_misclassified > 0) {
+        theta = theta + eta * batch_gradient;
+        
+        std::cout << "[第" << iter+1 << "轮] 批次" << batch_count << "更新|误分类点数:" << batch_misclassified << "\n"
+                  << "A(" << theta_old(0, 0) << "→" << theta(0,0) << ")\n"
+                  << "B(" << theta_old(1, 0) << "→" << theta(1,0) << ")\n"
+                  << "C(" << theta_old(2, 0) << "→" << theta(2,0) << ")\n"
+                  << "D(" << theta_old(3, 0) << "→" << theta(3,0) << ")\n" << std::endl;
       }
     }
     
-    std::cout << "[第" << iter + 1 << "轮] 结束|误分类点数:" << misclassified 
+    std::cout << "[第" << iter + 1 << "轮] 结束|总误分类点数:" << total_misclassified 
               << " | 当前参数: A=" << theta(0,0) << " B=" << theta(1,0)
               << " C=" << theta(2,0) << " D=" << theta(3,0) << std::endl;
     std::cout << "-------------------------------------------------------" << std::endl;
     
-    if (misclassified == 0) {
+    if (total_misclassified == 0) {
       std::cout << "[Info] 感知机训练收敛！总迭代次数:" << iter + 1 << std::endl;
       break;
     }
@@ -179,11 +205,12 @@ int main() {
     return -1;
   }
     
-  // 训练感知机
-  std::cout << "\n开始训练感知机..." << std::endl;
+  // 训练感知机（使用小批量梯度下降）
+  std::cout << "\n开始训练感知机（小批量梯度下降）..." << std::endl;
   
-  //   ------------------------------------    学习率 迭代次数
-  cv::Mat_<float> theta = trainPerceptron(X, y, 0.3f, 10000);
+  // 使用小批量梯度下降版本
+  // 参数：学习率=0.3，批量大小=4，最大迭代次数=10000
+  cv::Mat_<float> theta = trainPerceptronMiniBatch(X, y, 0.3f, 4, 10000);
   
   // 验证结果
   bool success = validatePerceptron(X, y, theta);
@@ -198,22 +225,18 @@ int main() {
                 << theta(2,0)/scale << "z + " << theta(3,0)/scale << " = 0" << std::endl;
       std::cout << "目标平面:   x - 2y + 3z - 4 = 0" << std::endl;
       
-      // 计算误差
-      float error_B = fabs(theta(1,0)/scale - (-2));
-      float error_C = fabs(theta(2,0)/scale - 3);
-      float error_D = fabs(theta(3,0)/scale - (-4));
+      // 计算与目标平面的差异
+      float diff_B = fabs(theta(1,0)/scale + 2.0f);
+      float diff_C = fabs(theta(2,0)/scale - 3.0f);
+      float diff_D = fabs(theta(3,0)/scale + 4.0f);
       
-      std::cout << "\n参数误差:" << std::endl;
-      std::cout << "  B系数误差: " << error_B << std::endl;
-      std::cout << "  C系数误差: " << error_C << std::endl;
-      std::cout << "  D系数误差: " << error_D << std::endl;
+      std::cout << "\n与目标平面的差异:" << std::endl;
+      std::cout << "B系数差异: " << diff_B << std::endl;
+      std::cout << "C系数差异: " << diff_C << std::endl;
+      std::cout << "D系数差异: " << diff_D << std::endl;
     }
   } else {
-    std::cout << "\n训练失败,存在误分类点" << std::endl;
-    std::cout << "可能原因：" << std::endl;
-    std::cout << "1. 数据集不是线性可分的" << std::endl;
-    std::cout << "2. 学习率设置不合适" << std::endl;
-    std::cout << "3. 迭代次数不足" << std::endl;
+    std::cout << "\n========== 训练未完全收敛 ==========" << std::endl;
   }
   
   return 0;
