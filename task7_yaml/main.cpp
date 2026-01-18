@@ -1,8 +1,4 @@
 #include <iostream>
-// 写入 YAML 时必须包含<fstream>，因为需要
-// 用std::ofstream创建文件流、将 YAML 内容写入磁盘
-#include <fstream>
-// 必须包含yaml-cpp头文件
 #include <yaml-cpp/yaml.h>
 
 int main() {

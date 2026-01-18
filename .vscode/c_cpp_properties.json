@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**",
                 "/usr/include",
                 "/usr/include/opencv4",
-                "/opt/Galaxy_camera/inc"
+                "/opt/Galaxy_camera/inc",
+                "/opt/ros/jazzy/include/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",
