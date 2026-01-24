@@ -1,52 +1,90 @@
 # <center><font face="黑体" font color=orange size=10>张正友相机标定法</font></center>
 ## <center><font face="黑体" size=5 font color=cyan>YinKang'an</font></center>
-# 1.坐标系转换
 
 ## 相机标定是什么
 - 空间物体表面某点的三维几何位置与其在图像中对应点的二维图像坐标之间的关系,必须建立相互关系,必须建立相机成像的几何模型
 - 这些几何模型参数称相机的参数
 - 求解相机参数的过程称为相机标定
+
+# 1.坐标系转换
+
 ## 世界坐标系与相机坐标系
 - **世界坐标系**
   - 由于摄像机与被摄像可以放置在环境中的任意位置,这样就需要在环境中建立一个参考坐标系,来表示摄像机和被摄像物体的位置,这个坐标系称为世界坐标系
+
+  - 想象站在一个房间里,房间的角落就是世界坐标系的原点.这个坐标系是固定的,不会因为相机的移动而改变.
+
+    - **特点:**
+      - 原点可以放在房间的任何位置
+      - 坐标轴方向固定不变
+      - 用来描述整个场景中所有物体的位置
+
 - **相机坐标系**
-  - 也是一个三维直角坐标系,原点位于镜头光心,x轴指向相机向右,y轴指向相机向上,z轴指向相机前方
+  - 也是一个三维直角坐标系,原点位于镜头光心,x轴指向相机向左,y轴指向相机向上,z轴指向相机前方
+
+  - 现在想象你手里拿着相机,相机就是你的"眼睛".相机坐标系就是以相机为中心建立的坐标系.
+
+    - **特点:**
+      - 原点在相机的镜头中心
+      - x轴指向相机左侧,y轴指向上方,z轴指向相机前方
+      - 这个坐标系会随着相机的移动而移动
 ## 世界坐标系到相机坐标系的转换
-**1. 旋转**
+### **旋转**
   - 旋转的表示有很多:
     - 旋转矩阵
     - 欧拉角
     - 四元数
     - 轴角
     - 李群与李代数
-- 先旋转对齐,再平移回去
 <center><img src="pic/旋转.jpg" style="width: 50%;"alt="pic/旋转.jpg"></center>
 
 $$\begin{aligned}
-& X_c=X \\
-& Y c=\cos \theta \cdot Y+\sin \theta \cdot Z \\
-& Z c=-\sin \theta \cdot Y+\cos \theta \cdot Z
+& X_{\text{after}} = X_{\text{before}} \\
+& Y_{\text{after}} = \cos\theta \cdot Y_{\text{before}} + \sin\theta \cdot Z_{\text{before}} \\
+& Z_{\text{after}} = -\sin\theta \cdot Y_{\text{before}} + \cos\theta \cdot Z_{\text{before}}
 \end{aligned}$$
 
-$$\left[\begin{array}{c}
-X_c \\
-Y_c \\
-Z_c
+$$
+\left[\begin{array}{c}
+X_{\text{after}} \\
+Y_{\text{after}} \\
+Z_{\text{after}}
 \end{array}\right]=\left[\begin{array}{ccc}
 1 & 0 & 0 \\
-0 & \cos \theta & \sin \theta \\
-0 & -\sin \theta & \cos \theta
-\end{array}\right]\left[\begin{array}{c}
-X \\
-Y \\
-Z
-\end{array}\right]$$
+0 & \cos\theta & \sin\theta \\
+0 & -\sin\theta & \cos\theta
+\end{array}\right]
+\left[\begin{array}{c}
+X_{\text{before}} \\
+Y_{\text{before}} \\
+Z_{\text{before}}
+\end{array}\right]
+$$
 
-验证方法:所有的分解都满足**欧式距离不变性**
+### 验证方法:所有的分解都满足欧式距离不变性
 
-$$a_1{ }^2+a_2{ }^2+\cdots+a_n{ }^2=b_1{ }^2+b_2{ }^2+\cdots+b_n{ }^2$$
+#### 1. 三维空间形式
+$$
+X_{\text{before}}^2 + Y_{\text{before}}^2 + Z_{\text{before}}^2 = X_{\text{after}}^2 + Y_{\text{after}}^2 + Z_{\text{after}}^2
+$$
+- **符号含义**
+  - $X_{\text{before}},Y_{\text{before}},Z_{\text{before}}$：旋转前空间点的三维坐标分量
+  - $X_{\text{after}},Y_{\text{after}},Z_{\text{after}}$：旋转后同一点的三维坐标分量
 
-绕坐标轴旋转矩阵
+#### 2. 多维空间通用形式
+$$
+\sum_{i=1}^{n} a_{i,\text{before}}^2 = \sum_{i=1}^{n} a_{i,\text{after}}^2
+$$
+- **符号含义**
+  - $n$：空间维度（$n\ge2$）
+  - $a_{i,\text{before}}$:旋转前第 $i$ 维坐标分量
+  - $a_{i,\text{after}}$:旋转后第 $i$ 维坐标分量
+
+#### 核心结论
+旋转变换不改变向量模长的平方,满足**欧氏不变性**(保长度特性)
+
+
+### 绕坐标轴旋转矩阵
 
 $$\boldsymbol{R}(X_A, \theta) = \begin{bmatrix}
 1 & 0 & 0 \\
@@ -76,6 +114,26 @@ c \varphi c \theta & s \varphi s \theta s \psi+c \varphi c \psi & s \varphi s \t
 -s \theta & c \theta s \psi & c \theta c \psi
 \end{array}\right]
 \end{aligned}$$
+
+### 世界坐标系转相机坐标系的旋转顺序（绕固定轴）
+#### 旋转顺序定义
+旋转前坐标系转旋转后坐标系采用 **X→Y→Z 固定轴旋转顺序**，即：
+1.  第一步：绕**旋转前坐标系原始X轴**旋转 $\psi$（对应俯仰角 Pitch），旋转矩阵记为 $\boldsymbol{R}(X_{\text{before}},\psi)$
+2.  第二步：绕**旋转前坐标系原始Y轴**旋转 $\theta$（对应偏航角 Yaw），旋转矩阵记为 $\boldsymbol{R}(Y_{\text{before}},\theta)$
+3.  第三步：绕**旋转前坐标系原始Z轴**旋转 $\phi$（对应翻滚角 Roll），旋转矩阵记为 $\boldsymbol{R}(Z_{\text{before}},\phi)$
+
+#### 旋转矩阵的左乘关系
+由于固定轴旋转中**先执行的旋转矩阵位于右侧**，最终复合旋转矩阵表达式为：
+$$
+\boldsymbol{^{\text{before}}}\boldsymbol{R}_{\text{after}} = \boldsymbol{R}(Z_{\text{before}},\phi) \cdot \boldsymbol{R}(Y_{\text{before}},\theta) \cdot \boldsymbol{R}(X_{\text{before}},\psi)
+$$
+
+#### 核心说明
+- 所有旋转均绕**旋转前坐标系的原始XYZ轴**（固定轴）进行，旋转过程中坐标轴方向不随旋转而改变。
+- 该顺序的选择是为了贴合相机姿态调整的直观逻辑（俯仰→偏航→翻滚），便于工程上的参数标定与计算。
+- 其中 $\boldsymbol{^{\text{before}}}\boldsymbol{R}_{\text{after}}$ 里，上标 $\text{before}$ 对应世界坐标系，下标 $\text{after}$ 对应相机坐标系。
+
+
 
 补充:
 - 左乘还是右乘
@@ -313,6 +371,87 @@ z_w \\
 $$
 
 其中 $\alpha_x = f/dX$,$\alpha_y = f/dY$,称为 $u$ , $v$ 轴的尺度因子,$\mathbf{M}_1$ 称为相机的内部参数矩阵,$\mathbf{M}_2$ 称为相机的外部参数矩阵, $\mathbf{M}$ 称为投影矩阵
+
+### 🔍 **三维到二维转换的奥秘：z值去哪了？**
+
+这是一个非常关键的问题！在世界坐标系到像素坐标系的转换中，**z值并没有真正"丢失"，而是通过透视投影被"压缩"到了二维平面中**。
+
+#### 📐 **问题核心：透视投影的数学本质**
+
+让我们仔细分析转换过程中的z值去向：
+
+1. **世界坐标系 → 相机坐标系**（三维到三维）
+   ```math
+   \begin{bmatrix} x_c \\ y_c \\ z_c \\ 1 \end{bmatrix} = \begin{bmatrix} R & t \\ 0 & 1 \end{bmatrix} \begin{bmatrix} x_w \\ y_w \\ z_w \\ 1 \end{bmatrix}
+   ```
+   - 这里仍然是**三维坐标**，z值保留在相机坐标系中
+
+2. **相机坐标系 → 图像坐标系**（三维到二维的关键步骤）
+   ```math
+   s\begin{bmatrix} X \\ Y \\ 1 \end{bmatrix} = \begin{bmatrix} f & 0 & 0 & 0 \\ 0 & f & 0 & 0 \\ 0 & 0 & 1 & 0 \end{bmatrix} \begin{bmatrix} x_c \\ y_c \\ z_c \\ 1 \end{bmatrix}
+   ```
+
+#### 🎯 **z值的去向：比例因子s的秘密**
+
+**关键发现**：在透视投影矩阵中，**比例因子s实际上就是相机坐标系下的z_c值**！
+
+让我们展开这个矩阵乘法：
+
+```math
+sX = f \cdot x_c
+sY = f \cdot y_c  
+s = z_c
+```
+
+所以：
+```math
+X = \frac{f \cdot x_c}{z_c}
+Y = \frac{f \cdot y_c}{z_c}
+```
+
+#### 📊 **z值的作用：深度信息**
+
+**z_c（深度值）在这里起到了两个重要作用：**
+
+1. **透视效果**：物体离相机越远（z_c越大），在图像上显得越小
+2. **比例缩放**：作为分母，将三维坐标按距离比例缩放到二维平面
+
+#### 🎨 **直观理解：针孔相机模型**
+
+<center><img src="pic/针孔成像.jpg" style="width: 70%;" alt="针孔成像原理"></center>
+
+- **相似三角形原理**：$ \frac{X}{f} = \frac{x_c}{z_c} $
+- **z_c就是深度**：决定了物体在图像上的大小比例
+- **没有真正丢失**：z_c信息被编码在最终的像素坐标比例中
+
+#### 🔬 **数学证明：为什么需要齐次坐标**
+
+齐次坐标的引入正是为了处理这种透视变换：
+
+```math
+\begin{bmatrix} X \\ Y \\ 1 \end{bmatrix} \sim \begin{bmatrix} f \cdot x_c / z_c \\ f \cdot y_c / z_c \\ 1 \end{bmatrix}
+```
+
+**等号右边的向量实际上就是**：
+```math
+\frac{1}{z_c} \begin{bmatrix} f \cdot x_c \\ f \cdot y_c \\ z_c \end{bmatrix}
+```
+
+#### 💡 **总结：z值没有丢失，而是被"用掉了"**
+
+- ✅ **z_c作为深度信息**：决定了透视效果和物体大小
+- ✅ **z_c作为比例因子**：在齐次坐标变换中完成归一化  
+- ✅ **信息被编码**：深度信息被"压缩"到二维坐标的比例关系中
+- ✅ **可逆过程**：在立体视觉中，我们可以从多个视角恢复深度信息
+
+#### 🚀 **实际应用意义**
+
+这种转换正是**透视投影**的精髓所在：
+- **近大远小**：离相机近的物体在图像上更大
+- **深度感知**：虽然丢失了绝对深度，但保留了相对深度关系
+- **计算机视觉**：为后续的立体匹配、三维重建奠定基础
+
+所以，**z值并没有真正"丢失"，而是完成了它作为"深度编码器"的使命**，将三维世界的信息巧妙地映射到了二维图像上！🎯
 
 # 2.畸变
 ## 畸变参数(distortion parameter)
