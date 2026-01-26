@@ -82,7 +82,7 @@ int main()
   
   // 5.2 连接四个顶点形成矩形
   for (int i = 0; i < 4; i++) {
-      cv::line(canvas, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 0, 255), 2);
+    cv::line(canvas, vertices[i], vertices[(i + 1) % 4], cv::Scalar(255, 0, 255), 2);
   }
 
   //----------------------------------------------------------------------------------
@@ -94,16 +94,16 @@ int main()
   
   // 6.2 逐个连接顶点（空心三角形）
   for (int i = 0; i < 3; i++) {
-      cv::line(canvas, triangle[i], triangle[(i + 1) % 3], white, 2);
+    cv::line(canvas, triangle[i], triangle[(i + 1) % 3], white, 2);
   }
   
   // 6.3 绘制五边形
   std::vector<cv::Point> pentagon;
   for (int i = 0; i < 5; i++) {
-      double theta = i * 72 * CV_PI / 180.0;
-      int x = 200 + 50 * cos(theta);
-      int y = 550 + 50 * sin(theta);
-      pentagon.push_back(cv::Point(x, y));
+    double theta = i * 72 * CV_PI / 180.0;
+    int x = 200 + 50 * cos(theta);
+    int y = 550 + 50 * sin(theta);
+    pentagon.push_back(cv::Point(x, y));
   }
   
   std::vector<std::vector<cv::Point>> pentagonContours;
@@ -113,10 +113,10 @@ int main()
   // 6.4 绘制实心六边形
   std::vector<cv::Point> hexagon;
   for (int i = 0; i < 6; i++) {
-      double theta = i * 60 * CV_PI / 180.0;
-      int x = 400 + 50 * cos(theta);
-      int y = 550 + 50 * sin(theta);
-      hexagon.push_back(cv::Point(x, y));
+    double theta = i * 60 * CV_PI / 180.0;
+    int x = 400 + 50 * cos(theta);
+    int y = 550 + 50 * sin(theta);
+    hexagon.push_back(cv::Point(x, y));
   }
   
   std::vector<std::vector<cv::Point>> hexagonContours;
