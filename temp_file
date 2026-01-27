@@ -1,0 +1,15 @@
+/**
+@File      GXDef.h
+@Brief     the define for the GxIAPI dll module.
+@Author    Software Department
+@Date      2024-12-09
+@Version   1.0.2412.9091
+*/
+
+#ifndef GX_DEF_H
+#define GX_DEF_H
+
+#include "GXErrorList.h"
+
+//////////////////////////////////////////////////////////////////////////
+//Chinese??	??????
