@@ -1,6 +1,6 @@
 /**************************
- * author:YinKang'an
- * date:2026.01.25
+ * @author:   YinKang'an
+ * @date:     2026.01.25
  **************************/
 
 #include<opencv2/opencv.hpp>
