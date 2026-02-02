@@ -27,8 +27,9 @@ void myprint(int i) {
     // ① 立刻释放互斥锁lck(让其他线程能访问flag,不然主线程改不了flag,死锁)
     // ② 让当前线程“阻塞休眠”（不占CPU，解决忙等问题）
     // ③ 等被cv.notify_all()唤醒后，会**重新抢互斥锁lck**，抢到后再重新判断!flag
-  
   }
+  // 用谓词(predicate)检查条件是否真的满足 替换while循环
+  //cv.wait(lck,[](){return flag;})
   std::cout << std::this_thread::get_id() << " 线程被唤醒,flag = " << flag << ", id =  " << i << std::endl;
 }
 
