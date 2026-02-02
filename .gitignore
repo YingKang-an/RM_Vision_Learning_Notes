@@ -1,0 +1,47 @@
+# 构建目录(所有层级的build/bin/obj全屏蔽，子目录也生效)
+build/
+bin/
+obj/
+
+# 编译中间产物(全目录生效，C/C++编译的目标文件/库文件)
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.dll
+*.lib
+
+# 编译日志/临时文件(全目录生效)
+*.log
+*.tmp
+*.out
+
+# 编辑器/系统临时文件(全目录生效)
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+Thumbs.db
+
+# 只屏蔽「编译生成的无后缀可执行文件」
+# 排除所有需要保留的文件类型,其余无后缀文件才屏蔽
+*
+!*/
+!*.c
+!*.h
+!*.cpp
+!*.hpp
+!*.py
+!*.md
+!*.txt
+!*.png
+!*.jpg
+!*.jpeg
+!*.gif
+!*.svg
+!*.gitignore
+!*.mp4
+!*.yaml
+!*.sh
