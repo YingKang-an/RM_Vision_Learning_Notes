@@ -7,31 +7,31 @@ void func(int a) {
   while(true) {
     std::cout << "Hello World" << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));   /**< 线程休眠1秒 */
-    std::this_thread::
   }
 }
 
 int main() {  /**< main所在的线程是主线程 */
   int a = 0;
+  ///////////这里线程的调用对象是函数(函数指针)////////////
   std::thread thread_1(func, 1);
-  std::cout << std::endl<<thread_1.hardware_concurrency() << std::endl;    /**< 输出当前系统的线程数 */
+  std::cout << "当前系统的线程数: " <<thread_1.hardware_concurrency() << std::endl;    /**< 输出当前系统的线程数 */
   thread_1.join();    /**< 阻塞主线程,当thread_1执行完毕后,主线程才会继续执行 */
-  thread_1.detach();    /**< 分离线程,当线程执行完毕后,线程会自动销毁 */
+  // thread_1.detach();    /**< 分离线程,当线程执行完毕后,线程会自动销毁 */
   while(true) {
-  std::cout << "thread_1 id: " << thread_1.get_id() << std::endl;
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cout << "thread_1 id: " << thread_1.get_id() << std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
-  while(true);
 }
 
-
-#ifdef NO_H
-#define NO_H
+//============================================================================================
+// 以下代码说明线程的可调用对象,为了编译通过,隐藏在 HIDE_CODE 中
+//============================================================================================
+#define HIDE_CODE 0 
+#if HIDE_CODE
 /**
  * @file       创建线程.cpp
  * 
- * @brief      创建线程
- *             该文件演示了如何创建一个线程
+ * @brief      说明线程的可调用对象
  * 
  * @author @b  YinKang'an
  * @date   @b  2026-01-26
@@ -49,13 +49,15 @@ int main() {
   
   std::cout << "this is main" << std::endl;    /**< main所在的线程是主线程 */
 
-  // 传入的参数是"可调对象",可以是函数指针,lambda表达式等
+  ///////// 传入的参数是"可调对象",可以是函数指针,lambda表达式等
   std::thread t1(SayHello);                    /**< 创建线程t1，执行SayHello函数 */
   t1.join();                                   /**< 阻塞主线程 */
 
   return 0;
 }
 
+//--------------------------------------------------------------------------------------------
+// 成员函数(成员函数指针)
 
 #include <thread>                             /** 包含线程库 */
 #include <iostream>
@@ -79,6 +81,8 @@ int main() {
   return 0;
 }
 
+//--------------------------------------------------------------------------------------------
+// Lambda表达式
 
 #include <thread>                             /** 包含线程库 */
 #include <iostream>
@@ -90,6 +94,9 @@ int main() {
 
   return 0;
 }
+
+//--------------------------------------------------------------------------------------------
+// 仿函数,函数对象
 
 #include <thread>                             /** 包含线程库 */
 #include <iostream>
