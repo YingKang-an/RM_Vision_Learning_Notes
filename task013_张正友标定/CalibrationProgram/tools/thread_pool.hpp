@@ -25,8 +25,7 @@ public:
   
   // 添加任务到线程池
   template<class F, class... Args>
-  auto enqueue(F&& f, Args&&... args) 
-    -> std::future<typename std::result_of<F(Args...)>::type>;
+  auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
   
   // 获取线程池大小
   size_t size() const { return workers.size(); }
@@ -47,8 +46,7 @@ private:
 
 // 模板函数实现
 template<class F, class... Args>
-auto ThreadPool::enqueue(F&& f, Args&&... args) 
-  -> std::future<typename std::result_of<F(Args...)>::type> {
+auto ThreadPool::enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
   
   using return_type = typename std::result_of<F(Args...)>::type;
   

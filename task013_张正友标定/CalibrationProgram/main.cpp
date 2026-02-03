@@ -144,12 +144,6 @@ int main() {
   cv::namedWindow("Camera Calibration", cv::WINDOW_NORMAL);
   cv::namedWindow("Corner Detection", cv::WINDOW_NORMAL);
   
-  std::cout << "按键控制:" << std::endl;
-  std::cout << "  SPACE - 采集标定图像" << std::endl;
-  std::cout << "  C     - 开始标定" << std::endl;
-  std::cout << "  S     - 保存标定结果" << std::endl;
-  std::cout << "  ESC   - 退出程序" << std::endl;
-  
   bool quit = false;
   GX_FRAME_BUFFER* currentFrame = nullptr;
   std::future<ProcessResult> processingFuture;
