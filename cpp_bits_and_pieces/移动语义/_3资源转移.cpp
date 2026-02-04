@@ -56,7 +56,6 @@ public:
   //#######################################################
   //   拷贝构造 和 拷贝赋值 中 malloc 函数 是对系统的交互
   //   频繁的 拷贝构造 和 拷贝赋值 会导致性能问题.
-
   //#######################################################
 
   Demo(Demo&& other) {
@@ -70,7 +69,7 @@ public:
     std::cout << "移动构造" << std::endl;
   }
   
-  Demo& operator=(Demo&& other) {
+  Demo& operator= (Demo&& other) {
     if (this != &other) {
       if (nullptr != p_arr) {  /**< 先释放当前对象的旧资源 */
         // 如果不处理,指针会被覆盖,会"没人管",无法free,最终导致内存泄漏
@@ -115,15 +114,6 @@ Demo createDemo() {
 // 任务1 返回局部对象
 void task_01() {
   Demo demo = createDemo();
-  // 执行 createDemo()：
-  // 1. 构造 demo_1、demo_2
-  // 2. return demo_2 → 拷贝构造【临时返回对象A】
-  // 3. 析构 demo_2、demo_1
-  // 4. createDemo() 执行完毕，返回【临时返回对象A】
-  // 现在执行：Demo demo = 【临时返回对象A】
-  // 5. 用【临时返回对象A】初始化 demo → 拷贝构造【临时对象B】（即 demo）
-  // 6. 【临时返回对象A】使命完成 → 析构
-  // 7. task_01 结束 → demo（临时对象B）析构
 }
 
 // 任务2 值方式传参
@@ -132,47 +122,19 @@ void do_logic(Demo demo) {   /**< 不可以写"引用"!createDemo() 返回的是
 }
 void task_02() {
   do_logic(createDemo());
-  // 1.createDemo() 执行完毕，返回【临时返回对象A】
-  // 2.【临时返回对象A】使用拷贝构造函数到 do_logic()的参数 demo
 }
 
 // 任务3 引用方式传参
-void do_logic_(const Demo& demo) {
-//  C++ 专门给 const 引用开了个“绿灯”：
-//  const 左值引用可以"绑定"临时对象,并延长临时对象的生命周期.
-// 意思是：
-// - 临时对象本来执行完这行就死
-// - 但被 const 引用绑住后,它会活到这个引用失效为止
-// - 而且不拷贝,直接用原对象
-}
+void do_logic_(const Demo& demo) { }
 void task_03() {
   do_logic_(createDemo());
-  // 1. createDemo() 内部：
-  //    - 构造 demo_1、demo_2
-  //    - return demo_2 → 拷贝构造【临时返回对象A】
-  //    - 析构 demo_2、demo_1
-  // 2. 执行 do_logic_(【临时返回对象A】)：
-  //    - const Demo& demo 直接绑定【临时返回对象A】
-  //    - **不拷贝，不调用任何构造函数！**
-  // 3. do_logic_ 结束，demo 失效，【临时返回对象A】析构
 }
 
 // 任务4 容器操作
 void task_04() {
   std::vector<Demo> vec;
   vec.push_back(Demo(10));
-  // 默认构造函数
-  // 拷贝构造函数
-  // 析构函数
-  // 析构函数
   vec.emplace_back(15);
-  // 默认构造函数
-  // 析构函数
-  //------------------
-  //  1. 如果所有元素的移动构造都加了  noexcept 
-  //  → 全部用移动构造"扩容"(最快)
-  //  2. 只要有一个元素的移动构造没加  noexcept 
-  //  → 全部用拷贝构造"扩容"(最安全)
 }
  
 // 任务5 交换对象
