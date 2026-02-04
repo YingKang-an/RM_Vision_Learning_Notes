@@ -195,6 +195,19 @@ void task_07() {
   vec[0] = Demo(20);
 }
 
+// 任务8 调用拷贝构造函数
+void task_08() {
+  Demo demo(10);
+  Demo demo_2 = demo;
+}
+
+// 任务9 调用拷贝赋值函数
+void task_09() {
+  Demo demo_1(10);
+  Demo demo_2(20);
+  demo_2 = demo_1;
+}
+
 int main() {
 
   std::cout << "-----task_01-----" << std::endl;
@@ -211,6 +224,10 @@ int main() {
   task_06();
   std::cout << "-----task_07-----" << std::endl;
   task_07();
+  std::cout << "-----task_08-----" << std::endl;
+  task_08();
+  std::cout << "-----task_09-----" << std::endl;
+  task_09();
 
   return 0;
 }
@@ -271,6 +288,17 @@ int main() {
 // 析构函数
 // 默认构造
 // 移动赋值
+// 析构函数
+// 析构函数
+// -----task_08-----
+// 默认构造
+// 拷贝构造
+// 析构函数
+// 析构函数
+// -----task_09-----
+// 默认构造
+// 默认构造
+// 拷贝赋值
 // 析构函数
 // 析构函数
 // [1] + Done                       "/usr/bin/gdb" --interpreter=mi --tty=${DbgTerm} 0<"/tmp/Microsoft-MIEngine-In-b5t30yrj.h1y" 1>"/tmp/Microsoft-MIEngine-Out-t1tiuh05.fwm"
