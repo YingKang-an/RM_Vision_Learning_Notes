@@ -24,8 +24,10 @@ void sum() {
 int main() {
   std::vector<std::thread> Threads;
   for (size_t i = 0; i < 10; i++) {
-    Threads.emplace_back(sum);
+    Threads.emplace_back(sum) ;
   }
+  // 这里的 t 是一个新的局部变量
+  // ​循环会依次把容器 Threads 里的每个元素，通过拷贝构造的方式复制给 t
   for(std::thread& t : Threads) {                    /**< 线程不能复制,必须引用!!! */
     t.join();
   }
