@@ -1,6 +1,6 @@
 {
-  "editor.semanticHighlighting.enabled": true,
-  "C_Cpp.semanticHighlighting.enabled": true,
+  "editor.semanticHighlighting.enabled": false,
+  "C_Cpp.semanticHighlighting.enabled": false,
   "editor.tokenColorCustomizations": {
     "textMateRules": [
       {
@@ -35,8 +35,14 @@
       }
     ]
   },
-  "C_Cpp.searchLimit": 1000,
+  "C_Cpp.searchLimit": 500,
   "C_Cpp.autocomplete": "disabled",
+  "C_Cpp.intelliSenseEngine": "default",
+  "C_Cpp.intelliSenseCacheSize": 2048,
+  "C_Cpp.disableIntelliSense": false,
+  "C_Cpp.autoAddFileAssociations": false,
+  "C_Cpp.parallelProcessing": true,
+  "C_Cpp.enhancedColorization": "disabled",
   "files.exclude": {
     "**/.git": true,
     "**/node_modules": true,
