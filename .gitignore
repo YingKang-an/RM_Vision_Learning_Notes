@@ -1,0 +1,57 @@
+# 屏蔽所有层级的构建目录
+build/
+bin/
+obj/
+
+# 屏蔽编译中间产物
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.dll
+*.lib
+
+# 屏蔽编译日志/临时文件
+*.log
+*.tmp
+*.out
+
+# 屏蔽编辑器/系统临时文件
+.idea/
+*.swp
+*.swo
+*.swn
+.DS_Store
+Thumbs.db
+
+# 屏蔽整个仓库的所有文件
+*
+# 排除所有子目录
+!**/
+# 屏蔽的文件类型
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.marscode
+# 排除需要的文件类型
+!*.c
+!*.h
+!*.cpp
+!*.hpp
+!*.py
+!*.md
+!*.txt
+!*.png
+!*.jpg
+!*.jpeg
+!*.gif
+!*.svg
+!*.gitignore
+!*.mp4
+!*.yaml
+!*.sh
+!*.vscode/
+!*.json
+!CMakeLists.txt
