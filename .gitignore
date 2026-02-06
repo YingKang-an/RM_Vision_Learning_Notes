@@ -35,6 +35,7 @@ Thumbs.db
 *.vcxproj.filters
 *.vcxproj.user
 *.marscode
+*CMakeFiles/
 # 排除需要的文件类型
 !*.c
 !*.h
@@ -42,7 +43,6 @@ Thumbs.db
 !*.hpp
 !*.py
 !*.md
-!*.txt
 !*.png
 !*.jpg
 !*.jpeg
@@ -54,4 +54,7 @@ Thumbs.db
 !*.sh
 !*.vscode/
 !*.json
+
+!*.txt
 !CMakeLists.txt
+CMakeCache.txt
