@@ -1,0 +1,46 @@
+{
+  "editor.semanticHighlighting.enabled": true,
+  "C_Cpp.semanticHighlighting.enabled": true,
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": "variable.other.readwrite.cpp",
+        "settings": {
+          "foreground": "#f08d49"
+        }
+      },
+      {
+        "scope": "entity.name.type.class.std.cpp",
+        "settings": {
+          "foreground": "#4ec9b0"
+        }
+      },
+      {
+        "scope": "variable.other.std.cpp",
+        "settings": {
+          "foreground": "#9cdcfe"
+        }
+      },
+      {
+        "scope": "storage.type.cpp",
+        "settings": {
+          "foreground": "#c586c0"
+        }
+      },
+      {
+        "scope": "keyword.control.cpp",
+        "settings": {
+          "foreground": "#569cd6"
+        }
+      }
+    ]
+  },
+  "C_Cpp.searchLimit": 1000,
+  "C_Cpp.autocomplete": "disabled",
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/build": true,
+    "**/dist": true
+  }
+}

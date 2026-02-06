@@ -25,7 +25,8 @@ public:
   
   // 添加任务到线程池
   template<class F, class... Args>
-  auto enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type>;
+  auto enqueue(F&& f, Args&&... args) 
+    -> std::future<typename std::result_of<F(Args...)>::type>;
   
   // 获取线程池大小
   size_t size() const { return workers.size(); }
@@ -45,15 +46,19 @@ private:
 };
 
 // 模板函数实现
+// 把任意函数+参数打包成任务,扔进线程池任务队列,返回一个未来能获取结果的std::future
 template<class F, class... Args>
-auto ThreadPool::enqueue(F&& f, Args&&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
+auto ThreadPool::enqueue(F&& f, Args&&... args) 
+  -> std::future<typename std::result_of<F(Args...)>::type> {
   
+  // 推导函数f(Args...)的返回类型
   using return_type = typename std::result_of<F(Args...)>::type;
   
+  // 打包任务：绑定函数f和参数args... ,返回一个无参函数
   auto task = std::make_shared<std::packaged_task<return_type()>>(
     std::bind(std::forward<F>(f), std::forward<Args>(args)...)
   );
-  future
+
   std::future<return_type> result = task->get_future();
   {
     std::unique_lock<std::mutex> lock(queueMutex);

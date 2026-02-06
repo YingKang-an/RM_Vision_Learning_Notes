@@ -45,3 +45,6 @@ Thumbs.db
 !*.mp4
 !*.yaml
 !*.sh
+!*.vscode
+!*.json
+*.marscode

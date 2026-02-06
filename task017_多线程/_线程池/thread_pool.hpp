@@ -105,8 +105,7 @@ private:
     std::function<void()> func;  // 任务执行逻辑（无参数无返回值，统一任务接口）
 
     /**
-     * 自定义构造函数（核心修复！！！）
-     * 解决：原代码中emplace(int, lambda)无匹配构造函数的编译错误
+     * 自定义构造函数
      * @param p 任务优先级（整型）
      * @param f 任务执行函数（std::function<void()>类型）
      */
