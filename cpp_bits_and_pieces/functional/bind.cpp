@@ -80,46 +80,46 @@ void test_member_func() {
 // 4. 绑定到 std::function
 // ------------------------------
 void test_bind_to_function() {
-    std::cout << "\n--- 4. 绑定到 std::function ---" << std::endl;
+  std::cout << "\n--- 4. 绑定到 std::function ---" << std::endl;
 
-    // function 需要无参函数
-    std::function<void()> func;
+  // function 需要无参函数
+  std::function<void()> func;
 
-    // 用 bind 绑定参数，适配成无参
-    func = std::bind(print, 10, 20);
-    func();
+  // 用 bind 绑定参数，适配成无参
+  func = std::bind(print, 10, 20);
+  func();
 }
 
 // ------------------------------
 // 5. 绑定引用参数
 // ------------------------------
 void increment(int& a) {
-    a++;
+  a++;
 }
 
 void test_ref() {
-    std::cout << "\n--- 5. 绑定引用参数 ---" << std::endl;
+  std::cout << "\n--- 5. 绑定引用参数 ---" << std::endl;
 
-    int x = 10;
+  int x = 10;
 
-    // 错误：bind 默认拷贝参数，不会传引用
-    // auto f = std::bind(increment, x);
+  // 错误：bind 默认拷贝参数，不会传引用
+  // auto f = std::bind(increment, x);
 
-    // 正确：用 std::ref 传引用
-    auto f = std::bind(increment, std::ref(x));
-    f();
-    std::cout << "x = " << x << std::endl; // 11
+  // 正确：用 std::ref 传引用
+  auto f = std::bind(increment, std::ref(x));
+  f();
+  std::cout << "x = " << x << std::endl; // 11
 }
 
 // ------------------------------
 // 主函数：运行所有示例
 // ------------------------------
 int main() {
-    test_normal_func();
-    test_functor();
-    test_member_func();
-    test_bind_to_function();
-    test_ref();
+  test_normal_func();
+  test_functor();
+  test_member_func();
+  test_bind_to_function();
+  test_ref();
 
-    return 0;
+  return 0;
 }

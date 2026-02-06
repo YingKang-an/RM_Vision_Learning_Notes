@@ -78,6 +78,11 @@ void test_member_func() {
   Test t;
 
   // 包装普通成员函数：需要 bind 绑定对象
+  // 成员函数真实签名是 void(Test*, int)，比 std::function<void(int)> 多一个 this 参数
+   // 所以不能直接赋值，必须用 bind 做两件事：
+   // 1. 固定 this：把 &t 绑定到第一个参数位（this 指针）
+   // 2. 预留用户参数：用 std::placeholders::_1 占住第二个参数位，表示“调用时再传 int a”
+   // bind 后，函数签名变成 void(int)，与 std::function<void(int)> 匹配
   std::function<void(int)> func1 =
     std::bind(&Test::show, &t, std::placeholders::_1);
   func1(100);
